@@ -22,9 +22,11 @@ module.exports = {
 
   module: {
     rules: [
-      test: /\.js$/,
-      exclude: /(node_modules)/,
-      use: [newLocal]
+      {
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: [newLocal]
+      }
     ]
   }
 };
