@@ -10,19 +10,22 @@ import { render } from '../render.js';
 export default class BoardPresenter {
   listComponent = new List();
 
-  constructor({ boardContainer }) {
+  constructor({ boardContainer, tasksModel }) {
     this.boardContainer = boardContainer;
+    this.tasksModel = tasksModel;
   }
 
   init() {
+    this.boardTasks = [...this.tasksModel.getTasks()];
+
     render(new ListSort(), this.boardContainer);
-    render(new EditPoint(), this.boardContainer);
+    render(new AddNewPoint({ task: this.boardTasks[0] }), this.boardContainer);
     render(this.listComponent, this.boardContainer);
 
-    for (let i = 0; i < 3; i++) {
-      render(new TripEvent(), this.listComponent.getElement());
+    for (let i = 1; i < this.boardTasks.length; i++) {
+      render(new TripEvent({ task: this.boardTasks[i] }), this.listComponent.getElement());
     }
 
-    render(new AddNewPoint(), this.boardContainer);
+    render(new EditPoint({ task: this.boardTasks[1] }), this.boardContainer);
   }
 }
