@@ -12,6 +12,8 @@ function createEditPointElement(task) {
   const endTime = dayjs(endDate).format('DD/MM/YY HH:mm');
 
   return `
+  <section class="trip-events">
+          <h2 class="visually-hidden">Trip events</h2>
   <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
                   <div class="event__type-wrapper">
@@ -117,27 +119,29 @@ function createEditPointElement(task) {
                   </section>
                 </section>
               </form>
+              </section>
   `;
 }
 
 export default class EditPoint {
+  #element = null;
   constructor({ task = getRandomTask() }) {
     this.task = task;
   }
 
-  getTemplate() {
+  get template() {
     return createEditPointElement(this.task);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

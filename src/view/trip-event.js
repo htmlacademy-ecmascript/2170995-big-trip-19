@@ -55,23 +55,24 @@ function createTripEvent(task) {
 }
 
 export default class TripEvent {
+  #element = null;
   constructor({ task }) {
     this.task = task;
   }
 
-  getTemplate() {
+  get template() {
     return createTripEvent(this.task);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

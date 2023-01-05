@@ -127,23 +127,24 @@ function createNewPoint(task) {
 }
 
 export default class AddNewPoint {
+  #element = null;
   constructor({ task = getRandomTask() }) {
     this.task = task;
   }
 
-  getTemplate() {
+  get template() {
     return createNewPoint(this.task);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
