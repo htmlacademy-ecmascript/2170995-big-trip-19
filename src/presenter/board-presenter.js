@@ -3,6 +3,7 @@ import List from '../view/list.js';
 import EditPoint from '../view/edit-point.js';
 // import AddNewPoint from '../view/add-new-point.js';
 import TripEvent from '../view/trip-event.js';
+import CreateFirstPoint from '../view/create-first-point.js';
 
 import { render } from '../render.js';
 
@@ -22,11 +23,16 @@ export default class BoardPresenter {
   init() {
     this.#boardTasks = [...this.#tasksModel.tasks];
 
-    render(new ListSort(), this.#boardContainer);
     render(this.#listComponent, this.#boardContainer);
 
-    for (let i = 0; i < this.#boardTasks.length; i++) {
-      this.#renderTask(this.#boardTasks[i]);
+    if (this.#boardTasks.length === 0) {
+      render(new CreateFirstPoint(), this.#listComponent.element);
+    } else {
+      render(new ListSort(), this.#boardContainer);
+
+      for (let i = 0; i < this.#boardTasks.length; i++) {
+        this.#renderTask(this.#boardTasks[i]);
+      }
     }
   }
 
