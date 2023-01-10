@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { constructionDuration, generatesEventOffer } from '../helper/utils.js';
 import dayjs from 'dayjs';
 
@@ -54,25 +54,24 @@ function createTripEvent(task) {
 `;
 }
 
-export default class TripEvent {
-  #element = null;
-  constructor({ task }) {
-    this.task = task;
+export default class TripEvent extends AbstractView {
+  #task = null;
+  #handleEditClick = null;
+
+  constructor({ task, onEditClick }) {
+    super();
+    this.#task = task;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
-    return createTripEvent(this.task);
+    return createTripEvent(this.#task);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

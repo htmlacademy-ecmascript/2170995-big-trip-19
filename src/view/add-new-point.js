@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getRandomTask } from '../mocks/task.js';
 import { getRandomFormOffers } from '../helper/utils.js';
 
@@ -126,25 +126,14 @@ function createNewPoint(task) {
   `;
 }
 
-export default class AddNewPoint {
-  #element = null;
+export default class AddNewPoint extends AbstractView {
+  #task = null;
   constructor({ task = getRandomTask() }) {
-    this.task = task;
+    super();
+    this.#task = task;
   }
 
   get template() {
-    return createNewPoint(this.task);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
+    return createNewPoint(this.#task);
   }
 }
