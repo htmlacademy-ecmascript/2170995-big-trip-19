@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createPoint() {
   return `<section class="trip-events">
@@ -7,21 +7,8 @@ function createPoint() {
 </section>`;
 }
 
-export default class CreateFirstPoint {
-  #element = null;
+export default class CreateFirstPoint extends AbstractView {
   get template() {
     return createPoint();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
