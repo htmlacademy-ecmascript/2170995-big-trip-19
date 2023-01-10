@@ -1,7 +1,8 @@
 import ListFilter from './view/list-filter.js';
-import { render } from './render.js';
+import { render } from './framework/render.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import TaskModel from './model/tasks-model.js';
+import ListSort from './view/list-sort.js';
 
 const siteTripMainElement = document.querySelector('.trip-main');
 const siteTripFilterElement = siteTripMainElement.querySelector('.trip-controls__filters');
@@ -12,6 +13,7 @@ const tasksModel = new TaskModel();
 const boardPresenter = new BoardPresenter({ boardContainer: siteMainElement, tasksModel, });
 
 render(new ListFilter(), siteTripFilterElement);
+render(new ListSort(), siteMainElement);
 
 
 boardPresenter.init();
