@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getRandomTask } from '../mocks/task.js';
 import { getRandomFormOffers } from '../helper/utils.js';
 
@@ -123,25 +123,32 @@ function createEditPointElement(task) {
   `;
 }
 
-export default class EditPoint {
-  #element = null;
-  constructor({ task = getRandomTask() }) {
-    this.task = task;
+export default class EditPoint extends AbstractView {
+  #task = null;
+  #handleFormSubmit = null;
+  #handleEditClick = null;
+
+  constructor({ task = getRandomTask(), onFormSubmit, onEditClick }) {
+    super();
+    this.#task = task;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
-    return createEditPointElement(this.task);
+    return createEditPointElement(this.#task);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

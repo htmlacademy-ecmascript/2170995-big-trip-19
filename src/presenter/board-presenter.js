@@ -1,11 +1,8 @@
-import ListSort from '../view/list-sort.js';
+import { render } from '../framework/render.js';
 import List from '../view/list.js';
 import EditPoint from '../view/edit-point.js';
-// import AddNewPoint from '../view/add-new-point.js';
 import TripEvent from '../view/trip-event.js';
 import CreateFirstPoint from '../view/create-first-point.js';
-
-import { render } from '../render.js';
 
 
 export default class BoardPresenter {
@@ -28,8 +25,6 @@ export default class BoardPresenter {
     if (this.#boardTasks.length === 0) {
       render(new CreateFirstPoint(), this.#listComponent.element);
     } else {
-      render(new ListSort(), this.#boardContainer);
-
       for (let i = 0; i < this.#boardTasks.length; i++) {
         this.#renderTask(this.#boardTasks[i]);
       }
@@ -37,39 +32,40 @@ export default class BoardPresenter {
   }
 
   #renderTask(task) {
-    const eventComponent = new TripEvent({ task });
-    const eventEditComponent = new EditPoint({ task });
-
-    const replacePointToForm = () => {
-      this.#listComponent.element.replaceChild(eventEditComponent.element, eventComponent.element);
-    };
-
-    const replaceFormToPoint = () => {
-      this.#listComponent.element.replaceChild(eventComponent.element, eventEditComponent.element);
-    };
-
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
         evt.preventDefault();
-        replaceFormToPoint();
+        replaceFormToPoint.call(this);
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     };
 
-    eventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replacePointToForm();
-      document.addEventListener('keydown', escKeyDownHandler);
+    const eventComponent = new TripEvent({
+      task,
+      onEditClick: () => {
+        replacePointToForm.call(this);
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
     });
 
-    eventEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceFormToPoint();
-      document.addEventListener('keydown', escKeyDownHandler);
+    const eventEditComponent = new EditPoint({
+      task,
+      onEditClick: () => {
+        replaceFormToPoint.call(this);
+      },
+      onFormSubmit: () => {
+        replaceFormToPoint.call(this);
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
     });
 
-    eventEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceFormToPoint();
-    });
+    function replacePointToForm() {
+      this.#listComponent.element.replaceChild(eventEditComponent.element, eventComponent.element);
+    }
+
+    function replaceFormToPoint() {
+      this.#listComponent.element.replaceChild(eventComponent.element, eventEditComponent.element);
+    }
 
     render(eventComponent, this.#listComponent.element);
   }

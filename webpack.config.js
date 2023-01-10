@@ -26,6 +26,10 @@ module.exports = {
         test: /\.js$/,
         exclude: /(node_modules)/,
         use: [newLocal]
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader']
       }
     ]
   }
