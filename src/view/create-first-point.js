@@ -1,4 +1,6 @@
+module4-task1
 import AbstractView from '../framework/view/abstract-view.js';
+
 
 function createPoint() {
   return `<section class="trip-events">
@@ -7,8 +9,10 @@ function createPoint() {
 </section>`;
 }
 
+module4-task1
 export default class CreateFirstPoint extends AbstractView {
   get template() {
     return createPoint();
   }
+
 }

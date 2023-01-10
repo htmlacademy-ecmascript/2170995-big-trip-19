@@ -3,6 +3,7 @@ import List from '../view/list.js';
 import EditPoint from '../view/edit-point.js';
 import TripEvent from '../view/trip-event.js';
 import CreateFirstPoint from '../view/create-first-point.js';
+module4-task1
 
 
 export default class BoardPresenter {
@@ -25,6 +26,8 @@ export default class BoardPresenter {
     if (this.#boardTasks.length === 0) {
       render(new CreateFirstPoint(), this.#listComponent.element);
     } else {
+
+
       for (let i = 0; i < this.#boardTasks.length; i++) {
         this.#renderTask(this.#boardTasks[i]);
       }
