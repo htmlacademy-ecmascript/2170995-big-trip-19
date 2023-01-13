@@ -1,16 +1,21 @@
-import { render } from '../framework/render.js';
+import { render, RenderPosition } from '../framework/render.js';
+import { updateItem } from '../helper/common.js';
 import List from '../view/list.js';
-import EditPoint from '../view/edit-point.js';
-import TripEvent from '../view/trip-event.js';
 import CreateFirstPoint from '../view/create-first-point.js';
+import ListSort from '../view/list-sort.js';
+
+import PointPresenter from '../presenter/poin-presenter.js';
 
 
 export default class BoardPresenter {
   #boardContainer = null;
   #tasksModel = null;
   #listComponent = new List();
+  #firstPointComponent = new CreateFirstPoint();
+  #listSort = new ListSort();
 
   #boardTasks = [];
+  #pointPresenter = new Map();
 
   constructor({ boardContainer, tasksModel }) {
     this.#boardContainer = boardContainer;
@@ -19,55 +24,54 @@ export default class BoardPresenter {
 
   init() {
     this.#boardTasks = [...this.#tasksModel.tasks];
+    this.#renderList();
+  }
 
+  #handleModeChange = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.resetView());
+  };
+
+  #handlePointChange = (updatedPoint) => {
+    this.#boardTasks = updateItem(this.#boardTasks, updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #renderPoint(task) {
+    const pointPresenter = new PointPresenter({
+      pointListContainer: this.#listComponent.element,
+      onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange,
+    });
+
+    pointPresenter.init(task);
+    this.#pointPresenter.set(task.id, pointPresenter);
+  }
+
+  #renderCreateFirstPoint() {
+    render(this.#firstPointComponent, this.#listComponent.element);
+  }
+
+  #renderListSort() {
+    render(this.#listSort, this.#listComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderList() {
     render(this.#listComponent, this.#boardContainer);
 
     if (this.#boardTasks.length === 0) {
-      render(new CreateFirstPoint(), this.#listComponent.element);
+      this.#renderCreateFirstPoint();
     } else {
 
       for (let i = 0; i < this.#boardTasks.length; i++) {
-        this.#renderTask(this.#boardTasks[i]);
+        this.#renderPoint(this.#boardTasks[i]);
       }
     }
+
+    this.#renderListSort();
   }
 
-  #renderTask(task) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        replaceFormToPoint.call(this);
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const eventComponent = new TripEvent({
-      task,
-      onEditClick: () => {
-        replacePointToForm.call(this);
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
-    });
-
-    const eventEditComponent = new EditPoint({
-      task,
-      onEditClick: () => {
-        replaceFormToPoint.call(this);
-      },
-      onFormSubmit: () => {
-        replaceFormToPoint.call(this);
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    });
-
-    function replacePointToForm() {
-      this.#listComponent.element.replaceChild(eventEditComponent.element, eventComponent.element);
-    }
-
-    function replaceFormToPoint() {
-      this.#listComponent.element.replaceChild(eventComponent.element, eventEditComponent.element);
-    }
-
-    render(eventComponent, this.#listComponent.element);
+  #clearList() {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
   }
 }

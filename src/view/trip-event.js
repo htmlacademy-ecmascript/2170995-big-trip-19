@@ -57,13 +57,16 @@ function createTripEvent(task) {
 export default class TripEvent extends AbstractView {
   #task = null;
   #handleEditClick = null;
+  #handleFavoriteClick = null;
 
-  constructor({ task, onEditClick }) {
+  constructor({ task, onEditClick, onFavoriteClick }) {
     super();
     this.#task = task;
     this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
 
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
   }
 
   get template() {
@@ -73,5 +76,10 @@ export default class TripEvent extends AbstractView {
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
+  };
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
   };
 }
