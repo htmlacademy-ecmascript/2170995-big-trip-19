@@ -1,4 +1,6 @@
-import { getRandomArrayElement, getRandomPrice, getRandomPhoto, getRandomDate, countDuration, getRandomOffer } from '../helper/utils.js';
+import { nanoid } from 'nanoid';
+import { getRandomPrice, getRandomPhoto, getRandomDate, countDuration, getRandomOffer } from '../helper/utils.js';
+import { getRandomArrayElement } from '../helper/common.js';
 import { TYPE, destination, description, offers } from '../const.js';
 
 const getRandomTask = () => {
@@ -16,6 +18,7 @@ const getRandomTask = () => {
     offers: hasOffers ? getRandomOffer(offers) : null,
     photos: getRandomPhoto(),
     description: getRandomArrayElement(description),
+    id: nanoid(),
   };
 };
 

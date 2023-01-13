@@ -1,10 +1,5 @@
 import dayjs from 'dayjs';
-
-// Случайный массив
-const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
-
-// Случайное число
-const getRandomInteger = (min, max) => min + Math.floor(Math.random() * (max - min));
+import { getRandomArrayElement, getRandomInteger } from './common.js';
 
 // Генерация фото
 const getRandomPhoto = () => {
@@ -130,8 +125,6 @@ const getRandomFormOffers = (offers) => {
 };
 
 export {
-  getRandomArrayElement,
-  getRandomInteger,
   getRandomPhoto,
   getRandomPrice,
   getRandomDate,
