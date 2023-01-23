@@ -47,12 +47,10 @@ export default class PointPresenter {
       return;
     }
 
-    // if (this.#pointListContainer.contains(prevPointComponent.element))
     if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    // if (this.#pointListContainer.contains(prevPointEditComponent.element))
     if (this.#mode === Mode.EDITING) {
       replace(this.#pointEditComponent, prevPointEditComponent);
     }
@@ -68,6 +66,7 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#pointEditComponent.reset(this.#task);
       this.#replaceFormToPoint();
     }
   }
@@ -88,6 +87,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this.#pointEditComponent.reset(this.#task);
       this.#replaceFormToPoint();
     }
   };
@@ -104,7 +104,8 @@ export default class PointPresenter {
     this.#handleDataChange({ ...this.#task, favorite: !this.#task.favorite });
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (point) => {
     this.#replaceFormToPoint();
+    this.#handleDataChange(point);
   };
 }

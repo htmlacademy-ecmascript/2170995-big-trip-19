@@ -1,8 +1,9 @@
 import { render, RenderPosition } from '../framework/render.js';
-import { updateItem } from '../helper/common.js';
+import { updateItem } from '../utils/common.js';
 import List from '../view/list.js';
 import CreateFirstPoint from '../view/create-first-point.js';
 import ListSort from '../view/list-sort.js';
+import AddNewPoint from '../view/add-new-point.js';
 
 import PointPresenter from '../presenter/poin-presenter.js';
 
@@ -55,6 +56,10 @@ export default class BoardPresenter {
     render(this.#listSort, this.#listComponent.element, RenderPosition.AFTERBEGIN);
   }
 
+  #renderAddnewPoint() {
+    render(new AddNewPoint({ task: this.#boardTasks[0] }), this.#listComponent.element);
+  }
+
   #renderList() {
     render(this.#listComponent, this.#boardContainer);
 
@@ -68,6 +73,7 @@ export default class BoardPresenter {
     }
 
     this.#renderListSort();
+    this.#renderAddnewPoint();
   }
 
   #clearList() {
