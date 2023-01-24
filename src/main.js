@@ -1,7 +1,8 @@
 import ListFilter from './view/list-filter.js';
-import { render } from './render.js';
+import { render } from './framework/render.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import TaskModel from './model/tasks-model.js';
+
 
 const siteTripMainElement = document.querySelector('.trip-main');
 const siteTripFilterElement = siteTripMainElement.querySelector('.trip-controls__filters');

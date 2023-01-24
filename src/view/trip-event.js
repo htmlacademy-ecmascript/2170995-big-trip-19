@@ -1,10 +1,33 @@
-import { createElement } from '../render.js';
-import { constructionDuration, generatesEventOffer } from '../helper/utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import { constructionDuration } from '../utils/task.js';
+import { OffersByType } from '../const.js';
 import dayjs from 'dayjs';
 
 function createTripEvent(task) {
 
-  const { basePrice, type, destination, startDate, endDate, duration, offers, favorite } = task;
+  const pointTypeOffer = task.offers.find((offer) => offer.type === task.type);
+  const pointTypeAllOffers = OffersByType.find((offer) => offer.type === task.type);
+
+  const pointName = task.destination.name;
+
+  const { basePrice, type, startDate, endDate, duration, favorite } = task;
+
+  function createOffer() {
+    if (pointTypeAllOffers && pointTypeOffer !== undefined) {
+      return pointTypeAllOffers.offers.map(({ title, price, id }) => {
+        if (pointTypeOffer.id.includes(id)) {
+          return (`<li class="event__offer">
+        <span class="event__offer-title">${title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${price}</span>
+        </li>`);
+        }
+      }
+      ).join('');
+    } else {
+      return ('');
+    }
+  }
 
   // Дни и время
   const startDay = dayjs(startDate).format('MMM D');
@@ -15,7 +38,6 @@ function createTripEvent(task) {
   const endTimeDateTime = dayjs(endDate).format('YYYY-MM-DDTHH:mm');
 
   const eventDuration = constructionDuration(duration);
-  const eventOffers = offers !== null ? generatesEventOffer(offers) : '';
   const isFavorite = favorite ? 'event__favorite-btn--active' : '';
   return `
   <li class="trip-events__item">
@@ -24,7 +46,7 @@ function createTripEvent(task) {
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${type} ${destination}</h3>
+                <h3 class="event__title">${type} ${pointName}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="${startTimeDateTime}">${startTime}</time>
@@ -38,7 +60,7 @@ function createTripEvent(task) {
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                  ${eventOffers}
+                  ${createOffer()}
                 </ul>
                 <button class="event__favorite-btn ${isFavorite}" type="button">
                   <span class="visually-hidden">Add to favorite</span>
@@ -54,25 +76,32 @@ function createTripEvent(task) {
 `;
 }
 
-export default class TripEvent {
-  #element = null;
-  constructor({ task }) {
-    this.task = task;
+export default class TripEvent extends AbstractView {
+  #task = null;
+  #handleEditClick = null;
+  #handleFavoriteClick = null;
+
+  constructor({ task, onEditClick, onFavoriteClick }) {
+    super();
+    this.#task = task;
+    this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
   }
 
   get template() {
-    return createTripEvent(this.task);
+    return createTripEvent(this.#task);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
+  };
 }

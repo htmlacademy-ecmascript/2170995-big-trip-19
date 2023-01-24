@@ -1,19 +1,22 @@
-import ListSort from '../view/list-sort.js';
+import { render, RenderPosition } from '../framework/render.js';
+import { updateItem } from '../utils/common.js';
 import List from '../view/list.js';
-import EditPoint from '../view/edit-point.js';
-// import AddNewPoint from '../view/add-new-point.js';
-import TripEvent from '../view/trip-event.js';
 import CreateFirstPoint from '../view/create-first-point.js';
+import ListSort from '../view/list-sort.js';
+import AddNewPoint from '../view/add-new-point.js';
 
-import { render } from '../render.js';
+import PointPresenter from '../presenter/poin-presenter.js';
 
 
 export default class BoardPresenter {
   #boardContainer = null;
   #tasksModel = null;
   #listComponent = new List();
+  #firstPointComponent = new CreateFirstPoint();
+  #listSort = new ListSort();
 
   #boardTasks = [];
+  #pointPresenter = new Map();
 
   constructor({ boardContainer, tasksModel }) {
     this.#boardContainer = boardContainer;
@@ -22,55 +25,59 @@ export default class BoardPresenter {
 
   init() {
     this.#boardTasks = [...this.#tasksModel.tasks];
+    this.#renderList();
+  }
 
+  #handleModeChange = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.resetView());
+  };
+
+  #handlePointChange = (updatedPoint) => {
+    this.#boardTasks = updateItem(this.#boardTasks, updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #renderPoint(task) {
+    const pointPresenter = new PointPresenter({
+      pointListContainer: this.#listComponent.element,
+      onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange,
+    });
+
+    pointPresenter.init(task);
+    this.#pointPresenter.set(task.id, pointPresenter);
+  }
+
+  #renderCreateFirstPoint() {
+    render(this.#firstPointComponent, this.#listComponent.element);
+  }
+
+  #renderListSort() {
+    render(this.#listSort, this.#listComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderAddnewPoint() {
+    render(new AddNewPoint({ task: this.#boardTasks[0] }), this.#listComponent.element);
+  }
+
+  #renderList() {
     render(this.#listComponent, this.#boardContainer);
 
     if (this.#boardTasks.length === 0) {
-      render(new CreateFirstPoint(), this.#listComponent.element);
+      this.#renderCreateFirstPoint();
     } else {
-      render(new ListSort(), this.#boardContainer);
 
       for (let i = 0; i < this.#boardTasks.length; i++) {
-        this.#renderTask(this.#boardTasks[i]);
+        this.#renderPoint(this.#boardTasks[i]);
       }
     }
+
+    this.#renderListSort();
+    this.#renderAddnewPoint();
   }
 
-  #renderTask(task) {
-    const eventComponent = new TripEvent({ task });
-    const eventEditComponent = new EditPoint({ task });
-
-    const replacePointToForm = () => {
-      this.#listComponent.element.replaceChild(eventEditComponent.element, eventComponent.element);
-    };
-
-    const replaceFormToPoint = () => {
-      this.#listComponent.element.replaceChild(eventComponent.element, eventEditComponent.element);
-    };
-
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    eventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replacePointToForm();
-      document.addEventListener('keydown', escKeyDownHandler);
-    });
-
-    eventEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceFormToPoint();
-      document.addEventListener('keydown', escKeyDownHandler);
-    });
-
-    eventEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceFormToPoint();
-    });
-
-    render(eventComponent, this.#listComponent.element);
+  #clearList() {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
   }
 }
