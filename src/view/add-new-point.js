@@ -1,5 +1,7 @@
 /* eslint-disable indent */
 import dayjs from 'dayjs';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { POINT_TYPES, OffersByType, randomDestinations } from '../const.js';
 import { createRandomPoint } from '../mocks/point.js';
@@ -140,6 +142,7 @@ function createNewPoint(task) {
 
 export default class AddNewPoint extends AbstractStatefulView {
   #handleFormSubmit = null;
+  #datepicker = null;
 
   constructor({ task = createRandomPoint(), onFormSubmit }) {
     super();
@@ -169,6 +172,8 @@ export default class AddNewPoint extends AbstractStatefulView {
     this.element.querySelector('.event__type-list').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#nameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+
+    this.#setDatepicker();
   }
 
   #formSubmitHandler = (evt) => {
@@ -202,6 +207,42 @@ export default class AddNewPoint extends AbstractStatefulView {
       basePrice: evt.target.value,
     });
   };
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
+
+  #setDatepicker() {
+
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'j/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        onChange: this.#dateFromChangeHandler,
+      },
+    );
+
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'j/m/y H:i',
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        onChange: this.#dateToChangeHandler,
+      },
+    );
+  }
 
   static parsePointToState(point) {
     return { ...point, };
