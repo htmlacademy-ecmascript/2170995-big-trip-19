@@ -222,7 +222,7 @@ const randomDestinations = [
 ];
 
 const FILTER_TYPES = {
-  everything: 'checked',
+  everything: '',
   future: '',
   present: 'checked',
   past: '',

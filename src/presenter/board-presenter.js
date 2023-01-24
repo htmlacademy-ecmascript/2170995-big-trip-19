@@ -42,8 +42,11 @@ export default class BoardPresenter {
       case SortType.TIME:
         this.#boardTasks.sort(sortPointByTime);
         break;
-      default:
+      case SortType.DAY:
         this.#boardTasks.sort(sortPointByDate);
+        break;
+      default:
+        this.#boardTasks = [...this.#sourcedBoardPoints];
     }
     this.#currentSortType = sortType;
   }
@@ -55,7 +58,7 @@ export default class BoardPresenter {
 
     this.#sortPoints(sortType);
     this.#clearList();
-    this.#renderPointList();
+    this.#renderPointList(this.#boardTasks);
   };
 
   #handleModeChange = () => {

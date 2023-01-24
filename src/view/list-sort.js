@@ -49,7 +49,7 @@ export default class ListSort extends AbstractView {
       return;
     }
 
-    // evt.preventDefault();
-    this.#handleSortTypeChange(evt.target.dataset.SortType);
+    evt.preventDefault();
+    this.#handleSortTypeChange(evt.target.dataset.sortType);
   };
 }
