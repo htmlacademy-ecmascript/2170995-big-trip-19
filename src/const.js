@@ -221,19 +221,19 @@ const randomDestinations = [
   }
 ];
 
+const FILTER_TYPES = {
+  everything: 'checked',
+  future: '',
+  present: 'checked',
+  past: '',
+};
+
 const SortType = {
   DAY: 'day',
   EVENT: 'event',
   TIME: 'time',
   PRICE: 'price',
   OFFER: 'offer'
-};
-
-const FILTER_TYPES = {
-  everything: 'checked',
-  future: '',
-  present: 'checked',
-  past: '',
 };
 
 
