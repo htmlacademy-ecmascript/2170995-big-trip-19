@@ -228,6 +228,7 @@ const FILTER_TYPES = {
   past: '',
 };
 
+
 export {
   POINT_TYPES,
   DESTINATIONS,
