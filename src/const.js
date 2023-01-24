@@ -66,12 +66,10 @@ const OffersByType = [
         title: 'select radio',
         price: 10,
       },
-    ]
-  },
-
-  {
-    type: 'train',
-    offers: [
+      
+    {
+      type: 'train',
+      offers: [
       {
         id: 1,
         title: 'play poker with the conductor',
@@ -103,17 +101,6 @@ const OffersByType = [
         id: 2,
         title: 'flying business class',
         price: 300,
-      },
-    ]
-  },
-
-  {
-    type: 'drive',
-    offers: [
-      {
-        id: 1,
-        title: 'Personal driver',
-        price: 150,
       },
     ]
   },
@@ -235,6 +222,7 @@ const SortType = {
   PRICE: 'price',
   OFFER: 'offer'
 };
+
 
 export {
   POINT_TYPES,
