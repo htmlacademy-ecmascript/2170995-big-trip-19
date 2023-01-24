@@ -221,13 +221,6 @@ const randomDestinations = [
   }
 ];
 
-const FILTER_TYPES = {
-  everything: 'checked',
-  future: '',
-  present: 'checked',
-  past: '',
-};
-
 const SortType = {
   DAY: 'day',
   EVENT: 'event',
@@ -235,6 +228,14 @@ const SortType = {
   PRICE: 'price',
   OFFER: 'offer'
 };
+
+const FILTER_TYPES = {
+  everything: 'checked',
+  future: '',
+  present: 'checked',
+  past: '',
+};
+
 
 export {
   POINT_TYPES,
