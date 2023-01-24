@@ -221,11 +221,29 @@ const randomDestinations = [
   }
 ];
 
+const FILTER_TYPES = {
+  everything: 'checked',
+  future: '',
+  present: 'checked',
+  past: '',
+};
+
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFER: 'offer'
+};
+
+
 export {
   POINT_TYPES,
   DESTINATIONS,
   DESCRIPTIONS,
   OFFERS,
   OffersByType,
-  randomDestinations
+  randomDestinations,
+  FILTER_TYPES,
+  SortType
 };
