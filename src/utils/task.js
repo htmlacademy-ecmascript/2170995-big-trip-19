@@ -62,6 +62,7 @@ const constructionDuration = (interval) => {
   return duration.join('');
 };
 
+
 export {
   getRandomPhoto,
   getRandomDate,

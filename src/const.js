@@ -228,12 +228,21 @@ const FILTER_TYPES = {
   past: '',
 };
 
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFER: 'offer'
+};
+
 export {
   POINT_TYPES,
   DESTINATIONS,
   DESCRIPTIONS,
   OFFERS,
+  FILTER_TYPES,
+  SortType,
   OffersByType,
   randomDestinations,
-  FILTER_TYPES
 };
