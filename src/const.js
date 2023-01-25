@@ -236,7 +236,6 @@ const SortType = {
   OFFER: 'offer'
 };
 
-
 export {
   POINT_TYPES,
   DESTINATIONS,
