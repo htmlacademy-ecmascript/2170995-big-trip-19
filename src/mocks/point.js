@@ -19,7 +19,7 @@ function createRandomPoint() {
       offers: OFFERS,
       photos: getRandomPhoto(),
       description: getRandomArrayElement(DESCRIPTIONS),
-    }
+    },
   };
 }
 

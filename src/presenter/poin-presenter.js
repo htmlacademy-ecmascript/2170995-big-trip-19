@@ -1,4 +1,7 @@
 import { remove, render, replace } from '../framework/render.js';
+import { UserAction, UpdateType } from '../const.js';
+import { isDatesEqual } from '../utils/task.js';
+
 import TripEvent from '../view/trip-event.js';
 import EditPoint from '../view/edit-point.js';
 
@@ -39,6 +42,7 @@ export default class PointPresenter {
     this.#pointEditComponent = new EditPoint({
       task: this.#task,
       onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick,
       onEditClick: this.#handleCloseEditClick,
     });
 
@@ -101,11 +105,27 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({ ...this.#task, favorite: !this.#task.favorite });
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      { ...this.#task, favorite: !this.#task.favorite });
   };
 
-  #handleFormSubmit = (point) => {
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate =
+      !isDatesEqual(this.#pointComponent.dateFrom, update.dateFrom) || !isDatesEqual(this.#pointComponent.dateTo, update.dateTo);
     this.#replaceFormToPoint();
-    this.#handleDataChange(point);
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update);
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 }

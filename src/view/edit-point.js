@@ -26,6 +26,8 @@ function createEditPointElement(task) {
   const startTime = dayjs(startDate).format('DD/MM/YY HH:mm');
   const endTime = dayjs(endDate).format('DD/MM/YY HH:mm');
 
+  const validName = `^(${destinationsName.join('|')})$`;
+
   function createHeaderList() {
     return (`
     <fieldset class="event__type-group">
@@ -100,7 +102,8 @@ function createEditPointElement(task) {
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointName}" list="destination-list-1">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointName}" list="destination-list-1"
+                    autocomplete="off" required pattern="${validName}">
                     <datalist id="destination-list-1">
                     ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
                     </datalist>
@@ -119,7 +122,7 @@ function createEditPointElement(task) {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -143,13 +146,15 @@ function createEditPointElement(task) {
 
 export default class EditPoint extends AbstractStatefulView {
   #handleFormSubmit = null;
+  #handleDeleteClick = null;
   #handleEditClick = null;
   #datepicker = null;
 
-  constructor({ task = createRandomPoint(), onFormSubmit, onEditClick }) {
+  constructor({ task = createRandomPoint(), onFormSubmit, onEditClick, onDeleteClick }) {
     super();
     this._setState(EditPoint.parsePointToState(task));
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleDeleteClick = onDeleteClick;
     this.#handleEditClick = onEditClick;
 
     this._restoreHandlers();
@@ -177,6 +182,7 @@ export default class EditPoint extends AbstractStatefulView {
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
 
     this.element.querySelector('.event__type-list').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#nameChangeHandler);
@@ -188,6 +194,11 @@ export default class EditPoint extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormSubmit(EditPoint.parseStateToPoint(this._state));
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditPoint.parseStateToPoint(this._state));
   };
 
   #editClickHandler = (evt) => {
@@ -263,8 +274,8 @@ export default class EditPoint extends AbstractStatefulView {
     return { ...point, };
   }
 
-  static parseStateToPoint(point) {
-    return { ...point, };
+  static parseStateToPoint(state) {
+    return { ...state, };
   }
 }
 

@@ -62,9 +62,12 @@ const constructionDuration = (interval) => {
   return duration.join('');
 };
 
+const isDatesEqual = (dataA, dataB) => (dataA === null && dataB === null) || dayjs(dataA).isSame(dataB, 'D');
+
 export {
   getRandomPhoto,
   getRandomDate,
   countDuration,
   constructionDuration,
+  isDatesEqual
 };
