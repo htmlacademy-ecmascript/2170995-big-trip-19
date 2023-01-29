@@ -48,7 +48,7 @@ function createNewPoint(task) {
         const isChecked = pointTypeOffer.id.includes(id) ? 'checked' : '';
         return (
           `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" ${isChecked}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-2" type="checkbox" name="event-offer-${id}" ${isChecked}>
             <label class="event__offer-label" for="event-offer-${id}-2">
               <span class="event__offer-title">${title}</span>
               &plus;&euro;&nbsp;
