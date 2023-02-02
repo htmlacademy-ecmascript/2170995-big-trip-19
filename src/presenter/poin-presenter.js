@@ -18,7 +18,9 @@ export default class PointPresenter {
   #pointComponent = null;
   #pointEditComponent = null;
 
-  #task = null;
+  #point = null;
+  #offersByType = null;
+  #destinations = null;
   #mode = Mode.DEFAULT;
 
   constructor({ pointListContainer, onDataChange, onModeChange }) {
@@ -27,20 +29,26 @@ export default class PointPresenter {
     this.#handleModeChange = onModeChange;
   }
 
-  init(task) {
-    this.#task = task;
+  init(point, offersByType, destinations) {
+    this.#point = point;
+    this.#offersByType = offersByType;
+    this.#destinations = destinations;
 
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new TripEvent({
-      task: this.#task,
+      point: this.#point,
+      offersByType: this.#offersByType,
+      destinations: this.#destinations,
       onEditClick: this.#handleShowEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#pointEditComponent = new EditPoint({
-      task: this.#task,
+      point: this.#point,
+      offersByType: this.#offersByType,
+      destinations: this.#destinations,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
       onEditClick: this.#handleCloseEditClick,
@@ -70,7 +78,7 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
-      this.#pointEditComponent.reset(this.#task);
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();
     }
   }
@@ -91,7 +99,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.#pointEditComponent.reset(this.#task);
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();
     }
   };
@@ -107,8 +115,8 @@ export default class PointPresenter {
   #handleFavoriteClick = () => {
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
-      UpdateType.MINOR,
-      { ...this.#task, favorite: !this.#task.favorite });
+      UpdateType.PATCH,
+      { ...this.#point, isFavorite: !this.#point.isFavorite });
   };
 
   #handleFormSubmit = (update) => {

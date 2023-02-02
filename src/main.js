@@ -2,29 +2,36 @@ import { render } from './framework/render.js';
 
 import BoardPresenter from './presenter/board-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
+import PointsApiService from './points-api-service.js';
 
 import TaskModel from './model/tasks-model.js';
 import FilterModel from './model/filter-model.js';
 
 import NewPointButton from './view/new-point-button-view.js';
 
+
+const AUTHORIZATION = 'Basic fm0sSqt48Pabgjsa5';
+const END_POINT = 'https://19.ecmascript.pages.academy/big-trip/';
+
 const bodyElement = document.querySelector('.page-body');
+const filtersElement = bodyElement.querySelector('.trip-controls__filters');
 const siteTripMainElement = bodyElement.querySelector('.trip-main');
 const siteMainElement = bodyElement.querySelector('.trip-events');
 
-const tasksModel = new TaskModel();
+const tasksModel = new TaskModel({
+  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
+});
 const filterModel = new FilterModel();
 
 const boardPresenter = new BoardPresenter({
-  boardContainer:
-    siteMainElement,
+  boardContainer: siteMainElement,
   tasksModel,
   filterModel,
   onNewPointDestroy: handleNewPointFormClose,
 });
 
 const filterPresenter = new FilterPresenter({
-  filterContainer: siteTripMainElement,
+  filterContainer: filtersElement,
   filterModel,
   tasksModel
 });
@@ -38,11 +45,14 @@ function handleNewPointFormClose() {
 }
 
 function handleNewPointButtonClick() {
-  boardPresenter.createPoint();
+  boardPresenter.createPoint(tasksModel);
   newPointButtonComponent.element.disabled = true;
 }
 
-render(newPointButtonComponent, siteTripMainElement);
 
-boardPresenter.init();
+boardPresenter.init(tasksModel);
 filterPresenter.init();
+tasksModel.init()
+  .finally(() => {
+    render(newPointButtonComponent, siteTripMainElement);
+  });
