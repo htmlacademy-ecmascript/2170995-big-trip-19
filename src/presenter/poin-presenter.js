@@ -1,6 +1,5 @@
 import { remove, render, replace } from '../framework/render.js';
 import { UserAction, UpdateType } from '../const.js';
-import { isDatesEqual } from '../utils/task.js';
 
 import TripEvent from '../view/trip-event.js';
 import EditPoint from '../view/edit-point.js';
@@ -64,11 +63,47 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointEditComponent, prevPointEditComponent);
+      replace(this.#pointComponent, prevPointEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
     remove(prevPointEditComponent);
+  }
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#pointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
   }
 
   destroy() {
@@ -120,13 +155,11 @@ export default class PointPresenter {
   };
 
   #handleFormSubmit = (update) => {
-    const isMinorUpdate =
-      !isDatesEqual(this.#pointComponent.dateFrom, update.dateFrom) || !isDatesEqual(this.#pointComponent.dateTo, update.dateTo);
-    this.#replaceFormToPoint();
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
-      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-      update);
+      UpdateType.MINOR,
+      update,
+    );
   };
 
   #handleDeleteClick = (point) => {

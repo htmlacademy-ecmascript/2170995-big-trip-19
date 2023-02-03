@@ -1,6 +1,3 @@
-import dayjs from 'dayjs';
-
-//  Продолжительность даты и времени
 const countDuration = (start, end) => {
   const interval = new Date(end - start);
 
@@ -29,10 +26,7 @@ const constructionDuration = (interval) => {
   return duration.join('');
 };
 
-const isDatesEqual = (dataA, dataB) => (dataA === null && dataB === null) || dayjs(dataA).isSame(dataB, 'D');
-
 export {
   countDuration,
   constructionDuration,
-  isDatesEqual
 };
