@@ -1,6 +1,5 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
-import EditPoint from '../view/edit-point.js';
-import { nanoid } from 'nanoid';
+import AddNewPoint from '../view/add-new-point.js';
 import { UserAction, UpdateType } from '../const.js';
 
 export default class NewPointPresenter {
@@ -8,7 +7,10 @@ export default class NewPointPresenter {
   #handleDataChange = null;
   #handleDestroy = null;
 
-  #pointEditComponent = null;
+  #tripAddNewPointComponent = null;
+
+  #offersByType = null;
+  #destinations = null;
 
   constructor({ pointListContainer, onDataChange, onDestroy }) {
     this.#pointListContainer = pointListContainer;
@@ -16,30 +18,35 @@ export default class NewPointPresenter {
     this.#handleDestroy = onDestroy;
   }
 
-  init() {
-    if (this.#pointEditComponent !== null) {
+  init(offersByType, destinations) {
+    this.#offersByType = offersByType;
+    this.#destinations = destinations;
+
+    if (this.#tripAddNewPointComponent !== null) {
       return;
     }
 
-    this.#pointEditComponent = new EditPoint({
+    this.#tripAddNewPointComponent = new AddNewPoint({
+      offersByType: this.#offersByType,
+      destinations: this.#destinations,
       onFormSubmit: this.#handleFormSubmit,
-      onDeleteClick: this.#handleDeleteClick,
+      onCancelClick: this.#handleCancelClick,
     });
 
-    render(this.#pointEditComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
+    render(this.#tripAddNewPointComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
   destroy() {
-    if (this.#pointEditComponent === null) {
+    if (this.#tripAddNewPointComponent === null) {
       return;
     }
 
     this.#handleDestroy();
 
-    remove(this.#pointEditComponent);
-    this.#pointEditComponent = null;
+    remove(this.#tripAddNewPointComponent);
+    this.#tripAddNewPointComponent = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
@@ -47,13 +54,12 @@ export default class NewPointPresenter {
   #handleFormSubmit = (point) => {
     this.#handleDataChange(
       UserAction.ADD_POINT,
-      UpdateType.MINOR,
-      { id: nanoid(), ...point },
+      UpdateType.MAJOR,
+      point,
     );
-    this.destroy();
   };
 
-  #handleDeleteClick = () => {
+  #handleCancelClick = () => {
     this.destroy();
   };
 

@@ -1,7 +1,7 @@
 import { render, replace, remove } from '../framework/render.js';
-import ListFilter from '../view/list-filter';
+import ListFilter from '../view/list-filter.js';
 import { filter } from '../utils/filter.js';
-import { FILTER_TYPES, UpdateType } from '../const.js';
+import { FilterType, UpdateType } from '../const.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -19,28 +19,28 @@ export default class FilterPresenter {
   }
 
   get filters() {
-    const tasks = this.#taskModel.points;
+    const points = this.#taskModel.points;
 
     return [
       {
-        type: FILTER_TYPES.everything,
-        name: 'everything',
-        count: filter[FILTER_TYPES.everything](tasks).length,
+        type: FilterType.EVERYTHING,
+        name: 'EVERYTHING',
+        count: filter[FilterType.EVERYTHING](points).length,
       },
       {
-        type: FILTER_TYPES.future,
-        name: 'future',
-        count: filter[FILTER_TYPES.future](tasks).length,
+        type: FilterType.FUTURE,
+        name: 'FUTURE',
+        count: filter[FilterType.FUTURE](points).length,
       },
       {
-        type: FILTER_TYPES.present,
-        name: 'present',
-        count: filter[FILTER_TYPES.present](tasks).length,
+        type: FilterType.PRESENT,
+        name: 'PRESENT',
+        count: filter[FilterType.PRESENT](points).length,
       },
       {
-        type: FILTER_TYPES.past,
-        name: 'past',
-        count: filter[FILTER_TYPES.past](tasks).length,
+        type: FilterType.PAST,
+        name: 'PAST',
+        count: filter[FilterType.PAST](points).length,
       }
     ];
   }

@@ -1,37 +1,4 @@
 import dayjs from 'dayjs';
-import { getRandomInteger } from './common.js';
-
-// Генерация фото
-const getRandomPhoto = () => {
-  const photos = [];
-
-  for (let i = 0; i < 4; i++) {
-    photos[i] = `http://picsum.photos/248/152?r=${Math.random()}`;
-  }
-
-  return photos;
-};
-
-// Генерация даты
-const getRandomDate = () => {
-  const maxCount = 20;
-  const minCount = 1;
-
-  const startDate = dayjs()
-    .add(getRandomInteger(minCount, maxCount), 'day')
-    .add(getRandomInteger(minCount, maxCount), 'hour')
-    .add(getRandomInteger(minCount, maxCount), 'minute');
-
-  const endDate = startDate.clone()
-    .add(getRandomInteger(0, maxCount), 'day')
-    .add(getRandomInteger(0, 59), 'hour')
-    .add(getRandomInteger(0, 59), 'minute');
-
-  return {
-    start: startDate.toDate(),
-    end: endDate.toDate()
-  };
-};
 
 //  Продолжительность даты и времени
 const countDuration = (start, end) => {
@@ -65,8 +32,6 @@ const constructionDuration = (interval) => {
 const isDatesEqual = (dataA, dataB) => (dataA === null && dataB === null) || dayjs(dataA).isSame(dataB, 'D');
 
 export {
-  getRandomPhoto,
-  getRandomDate,
   countDuration,
   constructionDuration,
   isDatesEqual

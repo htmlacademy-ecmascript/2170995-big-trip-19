@@ -1,21 +1,33 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { constructionDuration } from '../utils/task.js';
-import { OffersByType } from '../const.js';
+import { constructionDuration, countDuration } from '../utils/task.js';
 import dayjs from 'dayjs';
 
-function createTripEvent(task) {
+function createTripPointTemplate(point, offersByType, destinations) {
 
-  const pointTypeOffer = task.offers.find((offer) => offer.type === task.type);
-  const pointTypeAllOffers = OffersByType.find((offer) => offer.type === task.type);
+  const { basePrice, type, dateFrom, dateTo, isFavorite } = point;
 
-  const pointName = task.destination.name;
+  const pointTypeOffer = point.offers;
+  const pointTypeAllOffers = offersByType.find((offer) => offer.type === point.type);
 
-  const { basePrice, type, startDate, endDate, duration, favorite } = task;
+  const pointTypeDestination = point.destination;
+  const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination);
+
+  const startDay = dayjs(dateFrom).format('MMM D');
+  const startDayDateTime = dayjs(dateFrom).format('YYYY-MM-DD');
+  const startTime = dayjs(dateFrom).format('HH:mm');
+  const startTimeDateTime = dayjs(dateFrom).format('YYYY-MM-DDTHH:mm');
+  const endTime = dayjs(dateTo).format('HH:mm');
+  const endTimeDateTime = dayjs(dateTo).format('YYYY-MM-DDTHH:mm');
+
+  const duration = countDuration(dateFrom, dateTo);
+  const eventDuration = constructionDuration(duration);
+  const favorite = isFavorite ? 'event__favorite-btn--active' : '';
+
 
   function createOffer() {
-    if (pointTypeAllOffers && pointTypeOffer !== undefined) {
+    if (pointTypeAllOffers && pointTypeOffer.length !== 0) {
       return pointTypeAllOffers.offers.map(({ title, price, id }) => {
-        if (pointTypeOffer.id.includes(id)) {
+        if (pointTypeOffer.includes(id)) {
           return (`<li class="event__offer">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
@@ -29,16 +41,15 @@ function createTripEvent(task) {
     }
   }
 
-  // Дни и время
-  const startDay = dayjs(startDate).format('MMM D');
-  const startDayDateTime = dayjs(startDate).format('YYYY-MM-DD');
-  const startTime = dayjs(startDate).format('HH:mm');
-  const startTimeDateTime = dayjs(startDate).format('YYYY-MM-DDTHH:mm');
-  const endTime = dayjs(endDate).format('HH:mm');
-  const endTimeDateTime = dayjs(endDate).format('YYYY-MM-DDTHH:mm');
+  function createPointName() {
+    if (destinations.length !== 0) {
+      const pointName = pointDestination.name;
+      return pointName;
+    } else {
+      return ('');
+    }
+  }
 
-  const eventDuration = constructionDuration(duration);
-  const isFavorite = favorite ? 'event__favorite-btn--active' : '';
   return `
   <li class="trip-events__item">
               <div class="event">
@@ -46,7 +57,7 @@ function createTripEvent(task) {
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${type} ${pointName}</h3>
+                <h3 class="event__title">${type} ${createPointName()}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="${startTimeDateTime}">${startTime}</time>
@@ -62,7 +73,7 @@ function createTripEvent(task) {
                 <ul class="event__selected-offers">
                   ${createOffer()}
                 </ul>
-                <button class="event__favorite-btn ${isFavorite}" type="button">
+                <button class="event__favorite-btn ${favorite}" type="button">
                   <span class="visually-hidden">Add to favorite</span>
                   <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
                     <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -77,13 +88,17 @@ function createTripEvent(task) {
 }
 
 export default class TripEvent extends AbstractView {
-  #task = null;
+  #point = null;
+  #offersByType = null;
+  #destinations = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor({ task, onEditClick, onFavoriteClick }) {
+  constructor({ point, offersByType, destinations, onEditClick, onFavoriteClick }) {
     super();
-    this.#task = task;
+    this.#point = point;
+    this.#offersByType = offersByType;
+    this.#destinations = destinations;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
@@ -92,7 +107,7 @@ export default class TripEvent extends AbstractView {
   }
 
   get template() {
-    return createTripEvent(this.#task);
+    return createTripPointTemplate(this.#point, this.#offersByType, this.#destinations);
   }
 
   #editClickHandler = (evt) => {
