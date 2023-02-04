@@ -8,6 +8,7 @@ import List from '../view/list.js';
 import CreateFirstPoint from '../view/create-first-point.js';
 import ListSort from '../view/list-sort.js';
 import LoadingView from '../view/loading-view.js';
+import TripInfo from '../view/trip-info.js';
 
 import PointPresenter from '../presenter/poin-presenter.js';
 import NewPointPresenter from '../presenter/new-point-presenter.js';
@@ -20,6 +21,7 @@ const TimeLimit = {
 
 export default class BoardPresenter {
   #boardContainer = null;
+  #infoContainer = null;
 
   #tasksModel = null;
   #filterModel = null;
@@ -27,6 +29,7 @@ export default class BoardPresenter {
   #listComponent = new List();
   #firstPointComponent = null;
   #loadingComponent = new LoadingView();
+  #tripInfoComponent = null;
 
   #listSort = null;
   #currentSortType = SortType.DAY;
@@ -41,7 +44,7 @@ export default class BoardPresenter {
     upperLimit: TimeLimit.UPPER_LIMIT
   });
 
-  constructor({ boardContainer, tasksModel, filterModel, onNewPointDestroy }) {
+  constructor({ boardContainer, tasksModel, filterModel, onNewPointDestroy, infoContainer }) {
     this.#boardContainer = boardContainer;
 
     this.#tasksModel = tasksModel;
@@ -49,6 +52,8 @@ export default class BoardPresenter {
 
     this.#filterModel = filterModel;
     this.#filterModel.addObserver(this.#handleModelEvent);
+
+    this.#infoContainer = infoContainer;
 
     this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#listComponent.element,
@@ -153,6 +158,15 @@ export default class BoardPresenter {
     }
   };
 
+  #renderTripInfo(points, offers, destinations) {
+    this.#tripInfoComponent = new TripInfo({
+      points: points,
+      offers: offers,
+      destinations: destinations,
+    });
+    render(this.#tripInfoComponent, this.#infoContainer, RenderPosition.AFTERBEGIN);
+  }
+
   #renderPoint(point, offers, destinations) {
     const pointPresenter = new PointPresenter({
       pointListContainer: this.#listComponent.element,
@@ -214,6 +228,7 @@ export default class BoardPresenter {
       return;
     }
 
+    this.#renderTripInfo(points, offers, destinations);
     this.#renderListSort();
     render(this.#listComponent, this.#boardContainer);
     this.#renderPointList(points, offers, destinations);
@@ -224,6 +239,7 @@ export default class BoardPresenter {
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
 
+    remove(this.#tripInfoComponent);
     remove(this.#listSort);
     remove(this.#loadingComponent);
 
