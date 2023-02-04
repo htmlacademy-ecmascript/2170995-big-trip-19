@@ -15,7 +15,7 @@ const NEW_POINT = {
 };
 
 function createNewPointTemplate(data, offersByType, destinations) {
-  const { basePrice, type } = data;
+  const { basePrice, type, dateFrom, dateTo, isDisabled, isSaving } = data;
 
   const destinationsName = [];
   destinations.forEach((destination) => destinationsName.push(destination.name));
@@ -27,6 +27,8 @@ function createNewPointTemplate(data, offersByType, destinations) {
 
   const pointTypeAllOffers = offersByType.find((offer) => offer.type === data.type);
   const pointTypeOffer = data.offers;
+
+  const isSubmitDisabled = (((dateFrom && dateTo) === undefined) || ((dateFrom && dateTo) === ''));
 
   function createPointName() {
     if (pointTypeDestination && pointDestination) {
@@ -61,7 +63,7 @@ function createNewPointTemplate(data, offersByType, destinations) {
   }
 
   function createOffers() {
-    return pointTypeAllOffers ? (
+    return pointTypeAllOffers && pointTypeAllOffers.offers.length !== 0 ? (
       `<section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
@@ -70,7 +72,7 @@ function createNewPointTemplate(data, offersByType, destinations) {
         return (
           `<div class="event__offer-selector">
             <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-2" type="checkbox" name="event-offer-${id}"
-            value="${id}" ${checked}>
+            value="${id}" ${checked} ${isDisabled ? 'disabled' : ''}>
               <label class="event__offer-label" for="event-offer-${id}-2">
                 <span class="event__offer-title">${title}</span>
                   &plus;&euro;&nbsp;
@@ -95,7 +97,7 @@ function createNewPointTemplate(data, offersByType, destinations) {
             <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="${type}">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-2" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-2" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -120,7 +122,7 @@ function createNewPointTemplate(data, offersByType, destinations) {
             ${type}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" value="${createPointName()}" placeholder="City name" type="text" autocomplete="off"
-          name="event-destination" required pattern="${validName}" list="destination-list-1">
+          name="event-destination" required pattern="${validName}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
             <datalist id="destination-list-1">
               ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
             </datalist>
@@ -128,10 +130,10 @@ function createNewPointTemplate(data, offersByType, destinations) {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}" ${isDisabled ? 'disabled' : ''}>
             &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -139,10 +141,12 @@ function createNewPointTemplate(data, offersByType, destinations) {
             <span class="visually-hidden">Price</span>
               &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" required name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" required name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+    <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled || isDisabled ? 'disabled' : ''}>
+    ${isSaving ? 'Saving...' : 'Save'}
+    </button>
     <button class="event__reset-btn" type="reset">Cancel</button>
   </header>
     `);
@@ -308,10 +312,17 @@ export default class AddNewPoint extends AbstractStatefulView {
   };
 
   static parsePointToState(point) {
-    return { ...point, };
+    return {
+      ...point,
+      isDisabled: false,
+      isSaving: false,
+    };
   }
 
   static parseStateToPoint(state) {
-    return { ...state, };
+    const point = { ...state };
+    delete point.isDisabled;
+    delete point.isSaving;
+    return point;
   }
 }
