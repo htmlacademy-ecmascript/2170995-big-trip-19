@@ -14,6 +14,7 @@ const AUTHORIZATION = 'Basic fm0sSqt48Pabgjsa5';
 const END_POINT = 'https://19.ecmascript.pages.academy/big-trip/';
 
 const bodyElement = document.querySelector('.page-body');
+const tripInfoElement = bodyElement.querySelector('.trip-main');
 const filtersElement = bodyElement.querySelector('.trip-controls__filters');
 const siteTripMainElement = bodyElement.querySelector('.trip-main');
 const siteMainElement = bodyElement.querySelector('.trip-events');
@@ -25,6 +26,7 @@ const filterModel = new FilterModel();
 
 const boardPresenter = new BoardPresenter({
   boardContainer: siteMainElement,
+  infoContainer: tripInfoElement,
   tasksModel,
   filterModel,
   onNewPointDestroy: handleNewPointFormClose,

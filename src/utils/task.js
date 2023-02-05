@@ -9,24 +9,32 @@ const countDuration = (start, end) => {
 };
 
 const constructionDuration = (interval) => {
-  const duration = [];
-  if (interval.days !== 0) {
-    duration[0] = String(interval.days).padStart(2, '0');
-    duration[0] += 'D';
-  }
-  if (interval.hours !== 0) {
-    duration[1] = String(interval.hours).padStart(2, '0');
-    duration[1] += 'H';
-  }
-  if (interval.minutes !== 0) {
-    duration[2] = String(interval.minutes).padStart(2, '0');
-    duration[2] += 'M';
+
+  if (interval.hours === 0 && interval.days === 0) {
+    return (`
+    ${String(interval.minutes).padStart(2, '0')}M
+  `);
   }
 
-  return duration.join('');
+  if (interval.days === 0) {
+    return (`
+    ${String(interval.hours).padStart(2, '0')}H
+    ${String(interval.minutes).padStart(2, '0')}M
+  `);
+  }
+
+  if (interval.days !== 0) {
+    return (`
+    ${String(interval.days).padStart(2, '0')}D
+    ${String(interval.hours).padStart(2, '0')}H
+    ${String(interval.minutes).padStart(2, '0')}M
+  `);
+  }
 };
 
 export {
   countDuration,
   constructionDuration,
 };
+
+
