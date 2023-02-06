@@ -36,24 +36,28 @@ function getTripCostValue(points, offers) {
 }
 
 function getTripTitle(points, destinations) {
-  const MAX_DESTINATIONS_TITLE = 3;
-  let selectedDestinations = destinations.filter((destination) => points
-    .find((point) => point.destination === destination.id));
+  const selectedDestinations = [];
 
-  selectedDestinations = selectedDestinations.map((destination) => destination.name);
+  for (const point of points) {
+    const pointTypeDestination = point.destination;
+    const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination);
+    selectedDestinations.push(pointDestination.name);
+  }
 
   if (points.length === 0) {
     return '';
   }
 
-  if (selectedDestinations.length > MAX_DESTINATIONS_TITLE) {
-    const startDestination = destinations.find((destination) => points[0].destination === destination.id).name;
-    const endDestination = destinations.find((destination) => points.at(-1).destination === destination.id).name;
-
-    return [startDestination, endDestination].join(' &mdash; ... &mdash; ');
+  switch (selectedDestinations.length) {
+    case 1:
+      return `${selectedDestinations[0]}`;
+    case 2:
+      return `${selectedDestinations[0]} &mdash; ${selectedDestinations[1]}`;
+    case 3:
+      return `${selectedDestinations[0]} &mdash; ${selectedDestinations[1]} &mdash; ${selectedDestinations[2]}`;
+    default:
+      return `${selectedDestinations[0]} &mdash; ... &mdash; ${selectedDestinations[selectedDestinations.length - 1]}`;
   }
-
-  return selectedDestinations.join(' &mdash; ');
 }
 
 function createTripInfoTemplate(points, offers, destinations) {

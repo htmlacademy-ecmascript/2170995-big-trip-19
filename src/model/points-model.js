@@ -2,7 +2,7 @@ import Observable from '../framework/observable.js';
 import { UpdateType } from '../const.js';
 
 
-export default class TaskModel extends Observable {
+export default class PointsModel extends Observable {
   #points = [];
   #destinations = [];
   #offers = [];
@@ -63,7 +63,7 @@ export default class TaskModel extends Observable {
 
       this._notify(updateType, updatedPoint);
     } catch (err) {
-      throw new Error('Can\'t update task');
+      throw new Error('Can\'t update point');
     }
   }
 
