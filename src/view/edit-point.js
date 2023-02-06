@@ -8,11 +8,20 @@ function createDestination(point, destinations) {
   const pointTypeDestination = point.destination;
   const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination);
   const pointDescription = pointDestination.description;
+  const pointTypesPicture = pointDestination.pictures;
 
   return pointDestination && pointDescription ? (`
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">${pointDescription}</p>
+
+        <div class="event__photos-container">
+            <div class="event__photos-tape">
+              ${pointTypesPicture.map(({ src, description }) =>
+  (`<img class="event__photo" src="${src}" alt="${description}">`
+  )).join('')}
+            </div>
+          </div>
     </section>
   `) : '';
 }
@@ -101,10 +110,10 @@ function createHeader(point, destinations) {
 
   <div class="event__field-group  event__field-group--time">
     <label class="visually-hidden" for="event-start-time-1">From</label>
-    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}" ${isDisabled ? 'disabled' : ''}>
+    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${(dateFrom) ? dateFrom : ''}" ${isDisabled ? 'disabled' : ''}>
     &mdash;
     <label class="visually-hidden" for="event-end-time-1">To</label>
-    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}" ${isDisabled ? 'disabled' : ''}>
+    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${(dateTo) ? dateTo : ''}" ${isDisabled ? 'disabled' : ''}>
   </div>
 
   <div class="event__field-group  event__field-group--price">

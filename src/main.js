@@ -4,13 +4,13 @@ import BoardPresenter from './presenter/board-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import PointsApiService from './points-api-service.js';
 
-import TaskModel from './model/tasks-model.js';
+import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
 
 import NewPointButton from './view/new-point-button-view.js';
 
 
-const AUTHORIZATION = 'Basic fm0sSqt48Pabgjsa5';
+const AUTHORIZATION = 'Basic fm0sSqt48Pabgjsa5a';
 const END_POINT = 'https://19.ecmascript.pages.academy/big-trip/';
 
 const bodyElement = document.querySelector('.page-body');
@@ -19,7 +19,7 @@ const filtersElement = bodyElement.querySelector('.trip-controls__filters');
 const siteTripMainElement = bodyElement.querySelector('.trip-main');
 const siteMainElement = bodyElement.querySelector('.trip-events');
 
-const tasksModel = new TaskModel({
+const pointsModel = new PointsModel({
   pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
 });
 const filterModel = new FilterModel();
@@ -27,7 +27,7 @@ const filterModel = new FilterModel();
 const boardPresenter = new BoardPresenter({
   boardContainer: siteMainElement,
   infoContainer: tripInfoElement,
-  tasksModel,
+  pointsModel,
   filterModel,
   onNewPointDestroy: handleNewPointFormClose,
 });
@@ -35,7 +35,7 @@ const boardPresenter = new BoardPresenter({
 const filterPresenter = new FilterPresenter({
   filterContainer: filtersElement,
   filterModel,
-  tasksModel
+  pointsModel
 });
 
 const newPointButtonComponent = new NewPointButton({
@@ -47,14 +47,14 @@ function handleNewPointFormClose() {
 }
 
 function handleNewPointButtonClick() {
-  boardPresenter.createPoint(tasksModel);
+  boardPresenter.createPoint(pointsModel);
   newPointButtonComponent.element.disabled = true;
 }
 
 
-boardPresenter.init(tasksModel);
+boardPresenter.init(pointsModel);
 filterPresenter.init();
-tasksModel.init()
+pointsModel.init()
   .finally(() => {
     render(newPointButtonComponent, siteTripMainElement);
   });

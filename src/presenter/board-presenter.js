@@ -23,7 +23,7 @@ export default class BoardPresenter {
   #boardContainer = null;
   #infoContainer = null;
 
-  #tasksModel = null;
+  #pointsModel = null;
   #filterModel = null;
 
   #listComponent = new List();
@@ -44,11 +44,11 @@ export default class BoardPresenter {
     upperLimit: TimeLimit.UPPER_LIMIT
   });
 
-  constructor({ boardContainer, tasksModel, filterModel, onNewPointDestroy, infoContainer }) {
+  constructor({ boardContainer, pointsModel, filterModel, onNewPointDestroy, infoContainer }) {
     this.#boardContainer = boardContainer;
 
-    this.#tasksModel = tasksModel;
-    this.#tasksModel.addObserver(this.#handleModelEvent);
+    this.#pointsModel = pointsModel;
+    this.#pointsModel.addObserver(this.#handleModelEvent);
 
     this.#filterModel = filterModel;
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -64,7 +64,7 @@ export default class BoardPresenter {
 
   get points() {
     this.#filterType = this.#filterModel.filter;
-    const points = this.#tasksModel.points;
+    const points = this.#pointsModel.points;
     const filteredPoints = filter[this.#filterType](points);
 
     switch (this.#currentSortType) {
@@ -80,11 +80,15 @@ export default class BoardPresenter {
   }
 
   get offers() {
-    return this.#tasksModel.offers;
+    return this.#pointsModel.offers;
   }
 
   get destinations() {
-    return this.#tasksModel.destinations;
+    return this.#pointsModel.destinations;
+  }
+
+  get pointsInfo() {
+    return this.#pointsModel.points.sort(sortPointByDate);
   }
 
   init({ offers, destinations }) {
@@ -109,7 +113,7 @@ export default class BoardPresenter {
       case UserAction.UPDATE_POINT:
         this.#pointPresenter.get(update.id).setSaving();
         try {
-          await this.#tasksModel.updatePoint(updateType, update);
+          await this.#pointsModel.updatePoint(updateType, update);
         } catch (err) {
           this.#pointPresenter.get(update.id).setAborting();
         }
@@ -118,7 +122,7 @@ export default class BoardPresenter {
       case UserAction.ADD_POINT:
         this.#newPointPresenter.setSaving();
         try {
-          await this.#tasksModel.addPoint(updateType, update);
+          await this.#pointsModel.addPoint(updateType, update);
         } catch (err) {
           this.#newPointPresenter.setAborting();
         }
@@ -127,7 +131,7 @@ export default class BoardPresenter {
       case UserAction.DELETE_POINT:
         this.#pointPresenter.get(update.id).setDeleting();
         try {
-          await this.#tasksModel.deletePoint(updateType, update);
+          await this.#pointsModel.deletePoint(updateType, update);
         } catch (err) {
           this.#pointPresenter.get(update.id).setAborting();
         }
@@ -217,6 +221,7 @@ export default class BoardPresenter {
     const pointsCount = points.length;
     const offers = this.offers;
     const destinations = this.destinations;
+    const pointsInfo = this.pointsInfo;
 
     if (this.#isLoading) {
       this.#renderLoading();
@@ -228,7 +233,7 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#renderTripInfo(points, offers, destinations);
+    this.#renderTripInfo(pointsInfo, offers, destinations);
     this.#renderListSort();
     render(this.#listComponent, this.#boardContainer);
     this.#renderPointList(points, offers, destinations);

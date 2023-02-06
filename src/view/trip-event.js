@@ -36,18 +36,16 @@ function createTripPointTemplate(point, offersByType, destinations) {
         }
       }
       ).join('');
-    } else {
-      return ('');
     }
+    return ('');
   }
 
   function createPointName() {
     if (destinations.length !== 0) {
       const pointName = pointDestination.name;
       return pointName;
-    } else {
-      return ('');
     }
+    return ('');
   }
 
   return `
